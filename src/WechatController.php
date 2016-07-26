@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use Hulucat\WechatMch\WechatApi;
 use Illuminate\Http\Request;
 
-class CorpController extends Controller
+class WechatController extends Controller
 {
 	public function home(Request $request, WechatApi $api)
 	{
