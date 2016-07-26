@@ -56,8 +56,8 @@ class WechatApi{
 
     public function replyTextMsg($from, $to, $content){
         $textTpl = "<xml>
-                        <ToUserName><![CDATA[%s]]></ToUserName>
                         <FromUserName><![CDATA[%s]]></FromUserName>
+                        <ToUserName><![CDATA[%s]]></ToUserName>
                         <CreateTime>%s</CreateTime>
                         <MsgType><![CDATA[%s]]></MsgType>
                         <Content><![CDATA[%s]]></Content>

@@ -13,10 +13,10 @@ class WechatController extends Controller
         if($api->checkSignature($request->input('signature'), $request->input('timestamp'),
             $request->input('nonce'))){
             $dict = $api->parseMsg($GLOBALS["HTTP_RAW_POST_DATA"]);
-            Log::debug("WechatMch received message: ".json_encode($dict));
             if($dict){
                 switch ($dict['type']){
                     case 'text':
+                        Log::debug("WechatMch received text msg: ".$dict['content']);
                         $reply = $api->replyTextMsg(
                             $dict['to'],
                             $dict['from'],
