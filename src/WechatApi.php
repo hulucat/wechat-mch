@@ -51,7 +51,6 @@ class WechatApi{
         $content = trim($postObj->Content);
         $type = $postObj->MsgType;
         $rt = ['content'=>$content, 'type'=>$type, 'from'=>$from, 'to'=>$to];
-        Log::debug("WechatMch parse msg: ".json_encode($rt));
         return $rt;
     }
 
