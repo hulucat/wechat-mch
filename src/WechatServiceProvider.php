@@ -1,6 +1,6 @@
 <?php
 
-namespace Hulucat\WechatCorp;
+namespace Hulucat\WechatMch;
 
 use Illuminate\Support\ServiceProvider;
 use GuzzleHttp\Client as HttpClient;
@@ -16,7 +16,7 @@ class CorpServiceProvider extends ServiceProvider
     {
         //publish config
         $this->publishes([
-        		__DIR__.'/config/wechat_corp.php' => config_path('wechat_corp.php'),
+        		__DIR__.'/config/wechat_mch.php' => config_path('wechat_mch.php'),
         ]);
     }
 
@@ -29,9 +29,9 @@ class CorpServiceProvider extends ServiceProvider
     {
         //
         include __DIR__.'/routes.php';
-        $this->app->make('Hulucat\WechatCorp\CorpController');
-        $this->app->singleton('CorpApi', function($app){
-        	return new CorpApi(new HttpClient());
+        $this->app->make('Hulucat\WechatMch\WechatController');
+        $this->app->singleton('WechatApi', function($app){
+        	return new WechatApi(new HttpClient());
         });
     }
 }
