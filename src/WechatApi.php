@@ -40,6 +40,7 @@ class WechatApi{
     }
 
     public function parseMsg($postStr){
+        Log::debug("WechatMch parse row string: $postStr");
         if(!$postStr){
             return null;
         }
@@ -49,7 +50,9 @@ class WechatApi{
         $to = $postObj->ToUserName;
         $content = trim($postObj->Content);
         $type = $postObj->MsgType;
-        return ['content'=>$content, 'type'=>$type, 'from'=>$from, 'to'=>$to];
+        $rt = ['content'=>$content, 'type'=>$type, 'from'=>$from, 'to'=>$to];
+        Log::debug("WechatMch parse msg: ".json_encode($rt));
+        return $rt;
     }
 
     public function replyTextMsg($from, $to, $content){

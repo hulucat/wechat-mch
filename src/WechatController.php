@@ -16,11 +16,13 @@ class WechatController extends Controller
             if($dict){
                 switch ($dict['type']){
                     case 'text':
-                        return $api->replyTextMsg(
+                        $reply = $api->replyTextMsg(
                             $dict['to'],
                             $dict['from'],
                             '欢迎您关注!'
                         );
+                        Log::debug("Reply: $reply");
+                        return $reply;
                     case 'image':
                         return $api->replyTextMsg(
                             $dict['to'],
