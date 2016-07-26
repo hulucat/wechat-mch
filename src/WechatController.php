@@ -12,10 +12,30 @@ class WechatController extends Controller
 	{
         if($api->checkSignature($request->input('signature'), $request->input('timestamp'),
             $request->input('nonce'))){
-            $s = $request->input('echostr');
-            Log::debug("Echostr: $s");
-            Log::debug("Access token: ".$api->getAccessToken());
-            return $s;
+            $dict = $api->parseMsg($GLOBALS["HTTP_RAW_POST_DATA"]);
+            if($dict){
+                switch ($dict['type']){
+                    case 'text':
+                        return $api->replyTextMsg(
+                            $dict['to'],
+                            $dict['from'],
+                            '欢迎您关注!'
+                        );
+                    case 'image':
+                        return $api->replyTextMsg(
+                            $dict['to'],
+                            $dict['from'],
+                            '照片好漂亮!'
+                        );
+                    default:
+                        return $api->replyTextMsg(
+                            $dict['to'],
+                            $dict['from'],
+                            '嘎哈?!'
+                        );
+                }
+            }
+            return $request->input('echostr');
         }else{
             return 'ehh';
         }

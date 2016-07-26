@@ -39,6 +39,31 @@ class WechatApi{
         }
     }
 
+    public function parseMsg($postStr){
+        if(!$postStr){
+            return null;
+        }
+        libxml_disable_entity_loader(true);
+        $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+        $from = $postObj->FromUserName;
+        $to = $postObj->ToUserName;
+        $content = trim($postObj->Content);
+        $type = $postObj->MsgType;
+        return ['content'=>$content, 'type'=>$type, 'from'=>$from, 'to'=>$to];
+    }
+
+    public function replyTextMsg($from, $to, $content){
+        $textTpl = "<xml>
+                        <ToUserName><![CDATA[%s]]></ToUserName>
+                        <FromUserName><![CDATA[%s]]></FromUserName>
+                        <CreateTime>%s</CreateTime>
+                        <MsgType><![CDATA[%s]]></MsgType>
+                        <Content><![CDATA[%s]]></Content>
+                        <FuncFlag>0</FuncFlag>
+                    </xml>";
+        return sprintf($textTpl, $from, $to, time(), 'text', $content);
+    }
+
     public function checkSignature($signature, $timestamp, $nonce){
         $tmpArr = array($this->token, $timestamp, $nonce);
         sort($tmpArr, SORT_STRING);
