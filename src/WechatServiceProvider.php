@@ -5,7 +5,7 @@ namespace Hulucat\WechatMch;
 use Illuminate\Support\ServiceProvider;
 use GuzzleHttp\Client as HttpClient;
 
-class CorpServiceProvider extends ServiceProvider
+class WechatServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
