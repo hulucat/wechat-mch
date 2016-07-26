@@ -4,6 +4,7 @@ namespace Hulucat\WechatMch;
 use App\Http\Controllers\Controller;
 use Hulucat\WechatMch\WechatApi;
 use Illuminate\Http\Request;
+use Log;
 
 class WechatController extends Controller
 {
@@ -23,9 +24,9 @@ class WechatController extends Controller
 	public function oauth2(Request $request, CorpApi $corp){
 		$code = $request->input('code');
 		$back = $request->input('back');
-		\Log::debug("code: $code");
+		Log::debug("code: $code");
 		$uid = $corp->getUserId($code);
-		\Log::debug("uid: $uid");
+		Log::debug("uid: $uid");
 		$request->session()->set('corp_uid', $uid);
 		header("Location: $back", true, 302);
 	}
