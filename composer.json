@@ -1,0 +1,15 @@
+{
+	"name": "hulucat/wechat-mch",
+	"authors": [{
+		"name": "wangzheng",
+		"email": "wangzheng@hulucat.net"
+	}],
+	"minimum-stability": "dev",
+	"require": {},
+	"autoload": {
+		"psr-4": {
+			"Hulucat\\WechatMch\\": "src/"
+		}
+	},
+	"license": "MIT"
+}
