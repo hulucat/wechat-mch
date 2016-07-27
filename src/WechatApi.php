@@ -5,6 +5,20 @@ use GuzzleHttp\Client as HttpClient;
 use Cache;
 use Log;
 
+class Article{
+    public $title = null;
+    public $description = null;
+    public $url = null;
+    public $picurl = null;
+
+    public function __construct($title, $description, $url, $picurl){
+        $this->title = $title;
+        $this->description = $description;
+        $this->url = $url;
+        $this->picurl = $picurl;
+    }
+}
+
 class WechatApi{
 	protected $http;
     private $appId = null;
@@ -61,6 +75,10 @@ class WechatApi{
         if(property_exists($postObj, 'EventKey')){
             $rt['eventKey'] = $postObj->EventKey;
         }
+        if(property_exists($postObj, 'Latitude')){
+            $rt['lat'] = $postObj->Latitude;
+            $rt['lng'] = $postObj->Longitude;
+        }
         return $rt;
     }
 
@@ -81,11 +99,30 @@ class WechatApi{
         sort($tmpArr, SORT_STRING);
         $tmpStr = implode( $tmpArr );
         $tmpStr = sha1( $tmpStr );
-        if( $tmpStr == $signature ){
+        if($tmpStr == $signature){
             return true;
         }else{
             return false;
         }
+    }
+
+    public function sendNews($to, $articles){
+        $url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=";
+        $url .= $this->getAccessToken();
+        $rt = $this->httpPost($url, [
+            'touser'    => $to,
+            'msgtype'   => 'news',
+            'news'  => [
+                'articles'  => $articles,
+            ]
+        ]);
+        $rt = json_decode($rt);
+        Log::debug("WechatMch send news", [
+            'to'        => $to,
+            'articles'  => $articles,
+            'result'    => $rt,
+        ]);
+        return true;
     }
 
 	public function oauth2($backUrl){
@@ -156,12 +193,12 @@ class WechatApi{
     }
 
 	protected function httpGet($url, Array $query){
-		\Log::debug("WechatMch get: ", [
+		Log::debug("WechatMch get: ", [
 			'Request: ' => $url,
 			'Params: ' => $query,
 		]);
 		$response = $this->http->request('GET', $url, ['query' => $query]);
-		\Log::debug('WechatMch:', [
+		Log::debug('WechatMch:', [
 				'Status' => $response->getStatusCode(),
 				'Reason' => $response->getReasonPhrase(),
 				'Headers' => $response->getHeaders(),
