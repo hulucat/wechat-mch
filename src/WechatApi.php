@@ -124,8 +124,13 @@ class WechatApi{
                 'articles'  => $articles,
             ]
         ]);
-        $rt = json_decode($rt);
-        return true;
+        if($rt->getStatusCode()==200){
+            $body = $rt->getBody();
+            if($body->errcode==0){
+                return true;
+            }
+        }
+        return false;
     }
 
 	public function oauth2($backUrl){
@@ -210,13 +215,23 @@ class WechatApi{
 		return $response->getBody();
 	}
 
+    /**exception 'InvalidArgumentException' with message 'Passing in the "body" request option
+     * as an array to send a POST request has been deprecated.
+     * Please use the "form_params" request option to send a application/x-www-form-urlencoded request,
+     * or a the "multipart" request option to send a multipart/form-data request.'
+     * in /apps/jupiter/service/vendor/guzzlehttp/guzzle/src/Client.php:392
+     * @param $url
+     * @param $body
+     * @return mixed
+     */
     protected function httpPost($url, $body){
+        $body = json_encode($body, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
         Log::debug("WechatMch post: ", [
             'Request: ' => $url,
             'body: ' => $body,
         ]);
         $response = $this->http->request('POST', $url, [
-            'body'  => $body
+            'json'  => $body
         ]);
         Log::debug('WechatMch http post:', [
             'Status'    => $response->getStatusCode(),
