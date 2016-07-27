@@ -27,9 +27,6 @@ class WechatServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
-        include __DIR__.'/routes.php';
-        $this->app->make('Hulucat\WechatMch\WechatController');
         $this->app->singleton('WechatApi', function($app){
         	return new WechatApi(new HttpClient());
         });
