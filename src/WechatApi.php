@@ -106,6 +106,10 @@ class WechatApi{
         }
     }
 
+    public function newArticle($title, $description, $url, $picurl){
+        return new Article($title, $description, $url, $picurl);
+    }
+
     public function sendNews($to, $articles){
         $url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=";
         $url .= $this->getAccessToken();
