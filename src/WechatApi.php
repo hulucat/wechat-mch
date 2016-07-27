@@ -213,7 +213,7 @@ class WechatApi{
             'body: ' => $body,
         ]);
         $response = $this->http->request('POST', $url, [
-            'multipart'  => $body
+            'form_params'  => $body
         ]);
         Log::debug('WechatMch http post:', [
             'url'       => $url,
