@@ -113,6 +113,10 @@ class WechatApi{
     public function sendNews($to, $articles){
         $url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=";
         $url .= $this->getAccessToken();
+        Log::debug("WechatMch send news", [
+            'to'        => $to,
+            'articles'  => $articles,
+        ]);
         $rt = $this->httpPost($url, [
             'touser'    => $to,
             'msgtype'   => 'news',
@@ -198,7 +202,6 @@ class WechatApi{
 		]);
 		$response = $this->http->request('GET', $url, ['query' => $query]);
 		Log::debug('WechatMch http get:', [
-            'url'       => $url,
             'Status'    => $response->getStatusCode(),
             'Reason'    => $response->getReasonPhrase(),
             'Headers'   => $response->getHeaders(),
@@ -216,7 +219,6 @@ class WechatApi{
             'form_params'  => $body
         ]);
         Log::debug('WechatMch http post:', [
-            'url'       => $url,
             'Status'    => $response->getStatusCode(),
             'Reason'    => $response->getReasonPhrase(),
             'Headers'   => $response->getHeaders(),
