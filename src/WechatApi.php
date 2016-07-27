@@ -121,11 +121,6 @@ class WechatApi{
             ]
         ]);
         $rt = json_decode($rt);
-        Log::debug("WechatMch send news", [
-            'to'        => $to,
-            'articles'  => $articles,
-            'result'    => $rt,
-        ]);
         return true;
     }
 
@@ -202,11 +197,12 @@ class WechatApi{
 			'Params: ' => $query,
 		]);
 		$response = $this->http->request('GET', $url, ['query' => $query]);
-		Log::debug('WechatMch:', [
-				'Status' => $response->getStatusCode(),
-				'Reason' => $response->getReasonPhrase(),
-				'Headers' => $response->getHeaders(),
-				'Body' => strval($response->getBody()),
+		Log::debug('WechatMch http get:', [
+            'url'       => $url,
+            'Status'    => $response->getStatusCode(),
+            'Reason'    => $response->getReasonPhrase(),
+            'Headers'   => $response->getHeaders(),
+            'Body'      => strval($response->getBody()),
 		]);
 		return $response->getBody();
 	}
@@ -217,13 +213,15 @@ class WechatApi{
             'body: ' => $body,
         ]);
         $response = $this->http->request('POST', $url, [
-            'body'  => $body
+            'multipart'  => $body
         ]);
-        Log::debug('WechatMch:', [
-            'Status' => $response->getStatusCode(),
-            'Reason' => $response->getReasonPhrase(),
-            'Headers' => $response->getHeaders(),
-            'Body' => strval($response->getBody()),
+        Log::debug('WechatMch http post:', [
+            'url'       => $url,
+            'Status'    => $response->getStatusCode(),
+            'Reason'    => $response->getReasonPhrase(),
+            'Headers'   => $response->getHeaders(),
+            'Body'      => strval($response->getBody()),
         ]);
+        return $response;
     }
 }
