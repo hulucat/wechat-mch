@@ -125,7 +125,7 @@ class WechatApi{
             ]
         ]);
         if($rt->getStatusCode()==200){
-            $body = $rt->getBody();
+            $body = json_decode(strval($rt->getBody()));
             if($body->errcode==0){
                 return true;
             }
@@ -237,7 +237,7 @@ class WechatApi{
             'Status'    => $response->getStatusCode(),
             'Reason'    => $response->getReasonPhrase(),
             'Headers'   => $response->getHeaders(),
-            'Body'      => $response->getBody(),
+            'Body'      => strval($response->getBody()),
         ]);
         return $response;
     }
