@@ -39,6 +39,10 @@ class WechatApi{
         }
     }
 
+    /**
+     * @param $postStr
+     * @return array|null
+     */
     public function parseMsg($postStr){
         Log::debug("WechatMch parse row string: $postStr");
         if(!$postStr){
@@ -51,6 +55,12 @@ class WechatApi{
         $content = trim($postObj->Content);
         $type = $postObj->MsgType;
         $rt = ['content'=>$content, 'type'=>$type, 'from'=>$from, 'to'=>$to];
+        if(property_exists($postObj, 'Event')){
+            $rt['event'] = $postObj->Event;
+        }
+        if(property_exists($postObj, 'EventKey')){
+            $rt['eventKey'] = $postObj->EventKey;
+        }
         return $rt;
     }
 
