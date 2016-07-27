@@ -237,7 +237,7 @@ class WechatApi{
             'Status'    => $response->getStatusCode(),
             'Reason'    => $response->getReasonPhrase(),
             'Headers'   => $response->getHeaders(),
-            'Body'      => strval($response->getBody()),
+            'Body'      => $response->getBody(),
         ]);
         return $response;
     }
