@@ -24,7 +24,7 @@ class WechatOauthMiddleware
             if ($request->has('state') && $request->has('code')) {
                 $oauthBasic = $wechat->getOauthBasic($request->input('code'));
                 if($oauthBasic){
-                    if(strpos($oauthBasic->scope, 'snsapi_userinfo')>=0){
+                    if(str_contains($oauthBasic->scope, 'snsapi_userinfo')){
                         $userInfo = $wechat->getOauthUserInfo($oauthBasic);
                         if($userInfo){
                             session(['wechat_mch.oauth_user' => $userInfo]);
