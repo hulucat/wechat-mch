@@ -47,7 +47,7 @@ class WechatOauthMiddleware
             }
             Log::debug("ready to redirect", [
                 'fullUrl'       => $request->fullUrl(),
-                'scopes'        => json_encode($scopes),
+                'scopes'        => $scopes,
             ]);
             return $wechat->oauth2Redirect($request->fullUrl(), $scopes);
         }
