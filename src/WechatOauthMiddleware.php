@@ -26,7 +26,7 @@ class WechatOauthMiddleware
                 if(!$oauthBasic){
                     return '未取到用户授权';
                 }
-                if(strpos($oauthBasic->scope, 'snsapi_userinfo')){
+                if(strpos($oauthBasic->scope, 'snsapi_userinfo')>=0){
                     $userInfo = $wechat->getOauthUserInfo($oauthBasic);
                     if($userInfo){
                         session(['wechat_mch.oauth_user' => $userInfo]);
@@ -42,7 +42,7 @@ class WechatOauthMiddleware
                 return redirect()->to($this->getTargetUrl($request));
             }
             $scopes = 'snsapi_base';
-            if(in_array($request->path, config('wechat_mch.oauth_userinfo_paths'))){
+            if(in_array($request->path(), config('wechat_mch.oauth_userinfo_paths'))){
                 $scopes = 'snsapi_userinfo';
             }
             Log::debug("ready to redirect", [
