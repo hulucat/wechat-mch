@@ -53,6 +53,44 @@ class WechatApi{
         }
     }
 
+    public function oauth2Redirect($redirectUrl, $scope){
+        $url = sprintf("%s?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=STATE#wechat_redirect", [
+            'https://open.weixin.qq.com/connect/oauth2/authorize',
+            $this->appId,
+            urlencode($redirectUrl),
+            $scope,
+        ]);
+        header("Location: $url", true, 302);
+    }
+
+    public function getOauthBasic($code){
+        $body = $this->httpGet('https://api.weixin.qq.com/sns/oauth2/access_token', [
+            'grant_type'    => 'authorization_code',
+            'appid'         => $this->appId,
+            'secret'        => $this->secret,
+            'code'          => $code,
+        ]);
+        $rt = json_decode($body);
+        if(property_exists($rt, 'access_token')){
+            return $rt;
+        }else{
+            return null;
+        }
+    }
+
+    public function getOauthUserInfo($oauthBasic){
+        $body = $this->httpGet('https://api.weixin.qq.com/sns/oauth2/access_token', [
+            'access_token'          => $oauthBasic->access_token,
+            'openid'                => $oauthBasic->openid,
+        ]);
+        $rt = json_decode($body);
+        if(property_exists($rt, 'nickname')){
+            return $rt;
+        }else{
+            return null;
+        }
+    }
+
     /**
      * @param $postStr
      * @return array|null
