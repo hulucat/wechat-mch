@@ -78,9 +78,10 @@ class WechatApi{
     }
 
     public function getOauthUserInfo($oauthBasic){
-        $body = $this->httpGet('https://api.weixin.qq.com/sns/oauth2/access_token', [
+        $body = $this->httpGet('https://api.weixin.qq.com/sns/userinfo', [
             'access_token'          => $oauthBasic->access_token,
             'openid'                => $oauthBasic->openid,
+            'lang'                  => 'zh_CN'
         ]);
         $rt = json_decode($body);
         if(property_exists($rt, 'nickname')){

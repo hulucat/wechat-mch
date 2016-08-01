@@ -23,23 +23,21 @@ class WechatOauthMiddleware
         if (!session('wechat_mch.oauth_user')) {
             if ($request->has('state') && $request->has('code')) {
                 $oauthBasic = $wechat->getOauthBasic($request->input('code'));
-                if(!$oauthBasic){
-                    return '未取到用户授权';
-                }
-                if(strpos($oauthBasic->scope, 'snsapi_userinfo')>=0){
-                    $userInfo = $wechat->getOauthUserInfo($oauthBasic);
-                    if($userInfo){
-                        session(['wechat_mch.oauth_user' => $userInfo]);
+                if($oauthBasic){
+                    if(strpos($oauthBasic->scope, 'snsapi_userinfo')>=0){
+                        $userInfo = $wechat->getOauthUserInfo($oauthBasic);
+                        if($userInfo){
+                            session(['wechat_mch.oauth_user' => $userInfo]);
+                        }else{
+                            Log::warning("WechatMch can not get snsapi_userinfo", [
+                                'openid'    => $oauthBasic->openid,
+                            ]);
+                        }
                     }else{
-                        Log::warning("WechatMch can not get snsapi_userinfo", [
-                            'openid'    => $oauthBasic->openid,
-                        ]);
-                        return '未取到用户信息授权';
+                        session(['wechat_mch.oauth_user' => $oauthBasic]);
                     }
-                }else{
-                    session(['wechat_mch.oauth_user' => $oauthBasic]);
+                    return redirect()->to($this->getTargetUrl($request));
                 }
-                return redirect()->to($this->getTargetUrl($request));
             }
             $scopes = 'snsapi_base';
             if(in_array($request->path(), config('wechat_mch.oauth_userinfo_paths'))){
