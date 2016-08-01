@@ -53,14 +53,13 @@ class WechatApi{
         }
     }
 
-    public function oauth2Redirect($redirectUrl, $scope){
-        $url = sprintf("%s?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=STATE#wechat_redirect",
+    public function getOauth2Redirect($redirectUrl, $scope){
+        return sprintf("%s?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=STATE#wechat_redirect",
             'https://open.weixin.qq.com/connect/oauth2/authorize',
             $this->appId,
             urlencode($redirectUrl),
             $scope
         );
-        header("Location: $url", true, 302);
     }
 
     public function getOauthBasic($code){

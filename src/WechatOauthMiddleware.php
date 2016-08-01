@@ -49,7 +49,7 @@ class WechatOauthMiddleware
                 'fullUrl'       => $request->fullUrl(),
                 'scopes'        => $scopes,
             ]);
-            return $wechat->oauth2Redirect($request->fullUrl(), $scopes);
+            return redirect($wechat->getOauth2Redirect($request->fullUrl(), $scopes));
         }
         return $next($request);
     }
