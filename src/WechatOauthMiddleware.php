@@ -45,9 +45,6 @@ class WechatOauthMiddleware
             if(in_array($request->path, config('wechat_mch.oauth_userinfo_paths'))){
                 $scopes = 'snsapi_userinfo';
             }
-            if (is_string($scopes)) {
-                $scopes = array_map('trim', explode(',', $scopes));
-            }
             Log::debug("ready to redirect", [
                 'fullUrl'       => $request->fullUrl(),
                 'scopes'        => json_encode($scopes),
