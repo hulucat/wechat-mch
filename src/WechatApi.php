@@ -91,6 +91,20 @@ class WechatApi{
         }
     }
 
+    public function getUserInfo($openid){    
+        $body = $this->httpGet('https://api.weixin.qq.com/cgi-bin/user/info', [
+                'access_token' => $this->getAccessToken(),
+                'openid' => $openid,
+                'lang'   => 'zh_CN',
+        ]);
+        $rt = json_decode($body);
+        if(property_exists($rt, 'subscribe')){
+            return $rt;
+        }else{
+            return null;
+        }
+    }
+
     /**
      * @param $postStr
      * @return array|null
