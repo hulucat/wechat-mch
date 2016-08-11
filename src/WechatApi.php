@@ -100,13 +100,7 @@ class WechatApi{
         $rt = json_decode($body);
         if(property_exists($rt, 'subscribe')){
             if(property_exists($rt, 'nickname')){
-                //处理昵称中的表情符号
-                $nickname = json_encode($rt->nickname);
-                //将emoji的unicode留下，其他不动
-                $nickname = preg_replace_callback("#(\\\ue[0-9a-f]{3})#i", function($matches){
-                    return '';
-                }, $nickname);
-                $rt->nickname = json_decode($nickname);    
+                $rt->nickname = $this->userTextEncode($rt->nickname);
             }
             return $rt;
         }else{
@@ -234,5 +228,16 @@ class WechatApi{
             'Body'      => strval($response->getBody()),
         ]);
         return $response;
+    }
+
+    protected function userTextEncode($str){
+        if(!is_string($str))return $str;
+        if(!$str || $str=='undefined')return '';
+
+        $text = json_encode($str); //暴露出unicode
+        $text = preg_replace_callback("/(\\\u[ed][0-9a-f]{3})/i",function($str){
+            return addslashes($str[0]);
+        },$text); //将emoji的unicode留下，其他不动，这里的正则比原答案增加了d，因为我发现我很多emoji实际上是\ud开头的，反而暂时没发现有\ue开头。
+        return json_decode($text);
     }
 }
