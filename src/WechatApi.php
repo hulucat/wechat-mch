@@ -99,13 +99,15 @@ class WechatApi{
         ]);
         $rt = json_decode($body);
         if(property_exists($rt, 'subscribe')){
-            //处理昵称中的表情符号
-            $nickname = json_encode($rt->nickname);
-            //将emoji的unicode留下，其他不动
-            $nickname = preg_replace_callback("#(\\\ue[0-9a-f]{3})#i", function($matches){
-                return '';
-            }, $nickname);
-            $rt->nickname = $nickname;
+            if(property_exists($rt, 'subscribe')){
+                //处理昵称中的表情符号
+                $nickname = json_encode($rt->nickname);
+                //将emoji的unicode留下，其他不动
+                $nickname = preg_replace_callback("#(\\\ue[0-9a-f]{3})#i", function($matches){
+                    return '';
+                }, $nickname);
+                $rt->nickname = json_decode($nickname);    
+            }
             return $rt;
         }else{
             return null;
