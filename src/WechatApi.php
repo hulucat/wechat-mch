@@ -100,7 +100,7 @@ class WechatApi{
         $rt = json_decode($body);
         if(property_exists($rt, 'subscribe')){
             if(property_exists($rt, 'nickname')){
-                $rt->nickname = $this->userTextEncode($rt->nickname);
+                $rt->nickname = $this->encodeUserText($rt->nickname);
             }
             return $rt;
         }else{
@@ -230,14 +230,28 @@ class WechatApi{
         return $response;
     }
 
-    protected function userTextEncode($str){
+    /**
+    * 对用户昵称、消息之类的文字进行编码，以便能够保存到数据库
+    */
+    public function encodeUserText($str){
         if(!is_string($str))return $str;
         if(!$str || $str=='undefined')return '';
 
         $text = json_encode($str); //暴露出unicode
         $text = preg_replace_callback("/(\\\u[ed][0-9a-f]{3})/i",function($str){
             return addslashes($str[0]);
-        },$text); //将emoji的unicode留下，其他不动，这里的正则比原答案增加了d，因为我发现我很多emoji实际上是\ud开头的，反而暂时没发现有\ue开头。
+        },$text); //将emoji的unicode留下，其他不动
+        return json_decode($text);
+    }
+
+    /**
+    * 对数据库取出的用户昵称、消息进行解码，以便显示
+    */
+    private function decodeUserText($str){
+        $text = json_encode($str); //暴露出unicode
+        $text = preg_replace_callback('/\\\\\\\\/i',function($str){
+            return '\\';
+        },$text); //将两条斜杠变成一条，其他不动
         return json_decode($text);
     }
 }
