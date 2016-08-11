@@ -102,7 +102,9 @@ class WechatApi{
             //处理昵称中的表情符号
             $nickname = json_encode($rt->nickname);
             //将emoji的unicode留下，其他不动
-            $nickname = preg_replace("#(\\\ue[0-9a-f]{3})#ie", '', $nickname);
+            $nickname = preg_replace_callback("#(\\\ue[0-9a-f]{3})#ie", function($matches){
+                return '';
+            }, $nickname);
             $rt->nickname = $nickname;
             return $rt;
         }else{
