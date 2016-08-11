@@ -99,7 +99,7 @@ class WechatApi{
         ]);
         $rt = json_decode($body);
         if(property_exists($rt, 'subscribe')){
-            if(property_exists($rt, 'subscribe')){
+            if(property_exists($rt, 'nickname')){
                 //处理昵称中的表情符号
                 $nickname = json_encode($rt->nickname);
                 //将emoji的unicode留下，其他不动
