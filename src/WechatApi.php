@@ -247,7 +247,7 @@ class WechatApi{
     /**
     * 对数据库取出的用户昵称、消息进行解码，以便显示
     */
-    private function decodeUserText($str){
+    public function decodeUserText($str){
         $text = json_encode($str); //暴露出unicode
         $text = preg_replace_callback('/\\\\\\\\/i',function($str){
             return '\\';
