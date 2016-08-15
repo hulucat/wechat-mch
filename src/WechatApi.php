@@ -20,12 +20,10 @@ class Article{
 }
 
 class WechatApi{
-	protected $http;
     private $appId = null;
     private $secret = null;
 	private $token = null;
 	public function __construct(HttpClient $hc){
-		$this->http = $hc;
         $this->token = config('wechat_mch.token');
         $this->appId = config('wechat_mch.app_id');
         $this->secret = config('wechat_mch.secret');
@@ -37,7 +35,8 @@ class WechatApi{
         if($at){
             return $at;
         }else{
-            $body = $this->httpGet('https://api.weixin.qq.com/cgi-bin/token', [
+            $utils = new Utils();
+            $body = $utils->httpGet('https://api.weixin.qq.com/cgi-bin/token', [
                 'grant_type' => 'client_credential',
                 'appid' => $this->appId,
                 'secret'    => $this->secret,
@@ -63,7 +62,8 @@ class WechatApi{
     }
 
     public function getOauthBasic($code){
-        $body = $this->httpGet('https://api.weixin.qq.com/sns/oauth2/access_token', [
+        $utils = new Utils();
+        $body = $utils->httpGet('https://api.weixin.qq.com/sns/oauth2/access_token', [
             'grant_type'    => 'authorization_code',
             'appid'         => $this->appId,
             'secret'        => $this->secret,
@@ -78,7 +78,8 @@ class WechatApi{
     }
 
     public function getOauthUserInfo($oauthBasic){
-        $body = $this->httpGet('https://api.weixin.qq.com/sns/userinfo', [
+        $utils = new Utils();
+        $body = $utils->httpGet('https://api.weixin.qq.com/sns/userinfo', [
             'access_token'          => $oauthBasic->access_token,
             'openid'                => $oauthBasic->openid,
             'lang'                  => 'zh_CN'
@@ -91,8 +92,9 @@ class WechatApi{
         }
     }
 
-    public function getUserInfo($openid){    
-        $body = $this->httpGet('https://api.weixin.qq.com/cgi-bin/user/info', [
+    public function getUserInfo($openid){
+        $utils = new Utils();
+        $body = $utils->httpGet('https://api.weixin.qq.com/cgi-bin/user/info', [
                 'access_token' => $this->getAccessToken(),
                 'openid' => $openid,
                 'lang'   => 'zh_CN',
@@ -172,7 +174,8 @@ class WechatApi{
             'to'        => $to,
             'articles'  => $articles,
         ]);
-        $rt = $this->httpPost($url, [
+        $utils = new Utils();
+        $rt = $utils->httpPost($url, [
             'touser'    => $to,
             'msgtype'   => 'news',
             'news'  => [
@@ -186,72 +189,5 @@ class WechatApi{
             }
         }
         return false;
-    }
-
-	protected function httpGet($url, Array $query){
-		Log::debug("WechatMch get: ", [
-			'Request: ' => $url,
-			'Params: ' => $query,
-		]);
-		$response = $this->http->request('GET', $url, ['query' => $query]);
-		Log::debug('WechatMch http get:', [
-            'Status'    => $response->getStatusCode(),
-            'Reason'    => $response->getReasonPhrase(),
-            'Headers'   => $response->getHeaders(),
-            'Body'      => strval($response->getBody()),
-		]);
-		return $response->getBody();
-	}
-
-    /**exception 'InvalidArgumentException' with message 'Passing in the "body" request option
-     * as an array to send a POST request has been deprecated.
-     * Please use the "form_params" request option to send a application/x-www-form-urlencoded request,
-     * or a the "multipart" request option to send a multipart/form-data request.'
-     * in /apps/jupiter/service/vendor/guzzlehttp/guzzle/src/Client.php:392
-     * @param $url
-     * @param $body
-     * @return mixed
-     */
-    protected function httpPost($url, $body){
-        $body = json_encode($body, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
-        Log::debug("WechatMch post: ", [
-            'Request: ' => $url,
-            'body: ' => $body,
-        ]);
-        $response = $this->http->request('POST', $url, [
-            'body'  => $body
-        ]);
-        Log::debug('WechatMch http post:', [
-            'Status'    => $response->getStatusCode(),
-            'Reason'    => $response->getReasonPhrase(),
-            'Headers'   => $response->getHeaders(),
-            'Body'      => strval($response->getBody()),
-        ]);
-        return $response;
-    }
-
-    /**
-    * 对用户昵称、消息之类的文字进行编码，以便能够保存到数据库
-    */
-    public function encodeUserText($str){
-        if(!is_string($str))return $str;
-        if(!$str || $str=='undefined')return '';
-
-        $text = json_encode($str); //暴露出unicode
-        $text = preg_replace_callback("/(\\\u[ed][0-9a-f]{3})/i",function($str){
-            return addslashes($str[0]);
-        },$text); //将emoji的unicode留下，其他不动
-        return json_decode($text);
-    }
-
-    /**
-    * 对数据库取出的用户昵称、消息进行解码，以便显示
-    */
-    public function decodeUserText($str){
-        $text = json_encode($str); //暴露出unicode
-        $text = preg_replace_callback('/\\\\\\\\/i',function($str){
-            return '\\';
-        },$text); //将两条斜杠变成一条，其他不动
-        return json_decode($text);
     }
 }

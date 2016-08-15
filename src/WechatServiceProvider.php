@@ -3,7 +3,7 @@
 namespace Hulucat\WechatMch;
 
 use Illuminate\Support\ServiceProvider;
-use GuzzleHttp\Client as HttpClient;
+
 
 class WechatServiceProvider extends ServiceProvider
 {
@@ -28,7 +28,10 @@ class WechatServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('WechatApi', function($app){
-        	return new WechatApi(new HttpClient());
+        	return new WechatApi();
+        });
+        $this->app->singleton('WechatPayment', function($app){
+            return new Payment();
         });
     }
 }
