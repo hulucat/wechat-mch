@@ -23,7 +23,7 @@ class WechatApi{
     private $appId = null;
     private $secret = null;
 	private $token = null;
-	public function __construct(HttpClient $hc){
+	public function __construct(){
         $this->token = config('wechat_mch.token');
         $this->appId = config('wechat_mch.app_id');
         $this->secret = config('wechat_mch.secret');
