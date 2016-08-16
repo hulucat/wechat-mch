@@ -31,7 +31,7 @@ class WechatPayment {
         $dict['appid'] = config('wechat_mch.merchant_app_id');
         $dict['mch_id'] = config('wechat_mch.merchant_mch_id');
         $dict['sub_appid'] = config('wechat_mch.app_id');
-        $dict['sub_mch_id'] = config('wechat_mch.app_id');
+        $dict['sub_mch_id'] = config('wechat_mch.mch_id');
         $utils = new Utils();
         $dict['nonce_str'] = $utils->getNonceStr();
         $dict['trade_type'] = 'JSAPI';
