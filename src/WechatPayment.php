@@ -40,9 +40,9 @@ class WechatPayment {
 
         $result = $this->fromXml($this->postXml($xml, $url));
         Log::debug("WechatMch unifiedorder result: ".json_encode($result));
-        if($result->return_code=='SUCCESS'){
-            if($result->result_code=='SUCCESS'){
-                return $result->prepay_id;
+        if($result['return_code']=='SUCCESS'){
+            if($result['result_code']=='SUCCESS'){
+                return $result['prepay_id'];
             }else{
                 Log::error("Error prepare pay", [
                     'result_code'   => $result->result_code,
