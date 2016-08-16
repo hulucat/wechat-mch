@@ -19,19 +19,6 @@ class Article{
     }
 }
 
-/**
- * Class JsapiConfig
- * @package Hulucat\WechatMch
- */
-class JsApiConfig{
-    public $debug;
-    public $timestamp;
-    public $nonceStr;
-    public $appId;
-    public $signature;
-    public $jsApiList;
-}
-
 class WechatApi{
     private $appId = null;
     private $secret = null;
@@ -97,14 +84,20 @@ class WechatApi{
             $sign .= "{$key}={$value}";
         }
         $sign = sha1($sign);
-        $jsApiConfig = new JsApiConfig();
-        $jsApiConfig->debug = $debug;
-        $jsApiConfig->timestamp = $timestamp;
-        $jsApiConfig->nonceStr = $nonceStr;
-        $jsApiConfig->appId = config('wechat_mch.app_id');
-        $jsApiConfig->signature = $sign;
-        $jsApiConfig->jsApiList = $jsApiList;
-        return json_encode($jsApiConfig);
+
+        $rt = "{debug: $debug, timestamp: $timestamp, nonceStr: ";
+        $rt .= '"'.$nonceStr.'"';
+        $rt .= ',appId:"'.config('wechat_mch.app_id').'"';
+        $rt .= ',signature:"'.$sign.'"';
+        $rt .= ',jsApiList:[';
+        foreach ($jsApiList as $i=>$a){
+            if($i>0){
+                $rt .= ',';
+            }
+            $rt .= $a;
+        }
+        $rt .= ']}';
+        return $rt;
     }
 
     protected function getJsApiTicket(){
