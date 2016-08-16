@@ -52,6 +52,69 @@ class WechatApi{
         }
     }
 
+    /**生成jsapi config json字符串
+     * @param array $jsApiList
+     * @param bool $debug
+     * @return mixed
+     */
+    public function getJsApiConfig($jsApiList=[], $debug=false){
+        $utils = new Utils();
+        $url = $_SERVER['HTTPS']?'https://' : 'http://';
+        $url .= $_SERVER['HTTP_HOST'];
+        $url .= $_SERVER['REQUEST_URI'];
+        $url .= '?'.$_SERVER['QUERY_STRING'];
+        $nonceStr = $utils->getNonceStr();
+        $timestamp = time();
+        $ticket = $this->getJsApiTicket();
+        Log::debug("WechatMch: making jsapi params", [
+            'url'   => $url,
+        ]);
+
+        $dict = [
+            'jsapi_ticket'  => $ticket,
+            'nonceStr'      => $nonceStr,
+            'timestamp'     => $timestamp,
+            'url'           => $url
+        ];
+        $sign = '';
+        foreach ($dict as $key=>$value){
+            if($sign){
+                $sign .= '&';
+            }
+            $sign .= "{$key}={$value}";
+        }
+        $sign = sha1($sign);
+        $rt = [
+            'debug'     => $debug,
+            'timestamp' => $timestamp,
+            'nonceStr'  => $nonceStr,
+            'appId'     => config('wechat_mch.app_id'),
+            'signature' => $sign,
+            'jsApiList' => $jsApiList
+        ];
+        return json_encode($rt);
+    }
+
+    protected function getJsApiTicket(){
+        $cacheKey = 'JS_API_TICKET';
+        $ticket = Cache::get($cacheKey);
+        if($ticket){
+            return $ticket;
+        }
+        $utils = new Utils();
+        $ac = $this->getAccessToken();
+        $body = $utils->httpGet('https://api.weixin.qq.com/cgi-bin/ticket/getticket', [
+            'access_token'  => $ac,
+            'type'          => 'jsapi',
+        ]);
+        $rt = json_decode($body);
+        if($rt['errcode']==0 && array_key_exists('ticket', $rt)){
+            $ticket = $rt['ticket'];
+            Cache::put($cacheKey, $ticket, 100);
+        }
+        return $ticket;
+    }
+
     public function getOauth2Redirect($redirectUrl, $scope){
         return sprintf("%s?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=STATE#wechat_redirect",
             'https://open.weixin.qq.com/connect/oauth2/authorize',
