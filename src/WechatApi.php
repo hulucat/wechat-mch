@@ -77,7 +77,7 @@ class WechatApi{
 
         $dict = [
             'jsapi_ticket'  => $ticket,
-            'nonceStr'      => $nonceStr,
+            'noncestr'      => $nonceStr,
             'timestamp'     => $timestamp,
             'url'           => $url
         ];
