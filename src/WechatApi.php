@@ -69,7 +69,10 @@ class WechatApi{
         $timestamp = time();
         $ticket = $this->getJsApiTicket();
         Log::debug("WechatMch: making jsapi params", [
-            'url'   => $url,
+            'jsapi_ticket'  => $ticket,
+            'nonceStr'      => $nonceStr,
+            'timestamp'     => $timestamp,
+            'url'           => $url
         ]);
 
         $dict = [
@@ -85,6 +88,7 @@ class WechatApi{
             }
             $sign .= "{$key}={$value}";
         }
+        Log::debug("signature before sha1: $sign");
         $sign = sha1($sign);
 
         $rt = "{debug: $debug, timestamp: $timestamp, nonceStr: ";
