@@ -59,7 +59,7 @@ class WechatApi{
      */
     public function getJsApiConfig($jsApiList=[], $debug=false){
         $utils = new Utils();
-        $url = $_SERVER['HTTPS']?'https://' : 'http://';
+        $url = array_key_exists('HTTPS', $_SERVER)?'https://' : 'http://';
         $url .= $_SERVER['HTTP_HOST'];
         $url .= $_SERVER['REQUEST_URI'];
         $url .= '?'.$_SERVER['QUERY_STRING'];
