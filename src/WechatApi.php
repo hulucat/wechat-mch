@@ -94,7 +94,7 @@ class WechatApi{
             if($i>0){
                 $rt .= ',';
             }
-            $rt .= $a;
+            $rt .= "'$a'";
         }
         $rt .= ']}';
         return $rt;
