@@ -38,6 +38,7 @@ class WechatPayment {
         $dict['sign'] = $this->sign($dict);
         $xml = $this->toXml($dict);
         $result = $this->fromXml($this->postXml($xml, $url));
+        Log::debug("WechatMch unifiedorder result: ".json_encode($result));
         if($result->return_code=='SUCCESS'){
             if($result->result_code=='SUCCESS'){
                 return $result->prepay_id;
@@ -174,6 +175,7 @@ class WechatPayment {
         //返回结果
         if($data){
             curl_close($ch);
+            Log::debug("WechatMch post xml result: ".$data);
             return $data;
         } else {
             $error = curl_errno($ch);
