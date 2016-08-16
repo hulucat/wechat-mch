@@ -62,7 +62,9 @@ class WechatApi{
         $url = array_key_exists('HTTPS', $_SERVER)?'https://' : 'http://';
         $url .= $_SERVER['HTTP_HOST'];
         $url .= $_SERVER['REQUEST_URI'];
-        $url .= '?'.$_SERVER['QUERY_STRING'];
+        if($_SERVER['QUERY_STRING']){
+            $url .= '?'.$_SERVER['QUERY_STRING'];
+        }
         $nonceStr = $utils->getNonceStr();
         $timestamp = time();
         $ticket = $this->getJsApiTicket();
