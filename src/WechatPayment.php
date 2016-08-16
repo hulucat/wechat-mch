@@ -37,6 +37,7 @@ class WechatPayment {
         $dict['trade_type'] = 'JSAPI';
         $dict['sign'] = $this->sign($dict);
         $xml = $this->toXml($dict);
+
         $result = $this->fromXml($this->postXml($xml, $url));
         Log::debug("WechatMch unifiedorder result: ".json_encode($result));
         if($result->return_code=='SUCCESS'){
@@ -120,6 +121,7 @@ class WechatPayment {
             $str .= "{$key}={$value}";
         }
         $str .= "&key={$key}";
+        Log::debug("WechatMch signature before MD5: $str");
         return strtoupper(md5($str));
     }
 
@@ -148,6 +150,7 @@ class WechatPayment {
 
     private function postXml($xml, $url, $useCert=false, $timeout=30)
     {
+        Log::debug("WechatMch post xml to unifiedorder: \n".$xml);
         $ch = curl_init();
         //设置超时
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
@@ -175,7 +178,7 @@ class WechatPayment {
         //返回结果
         if($data){
             curl_close($ch);
-            Log::debug("WechatMch post xml result: ".$data);
+            Log::debug("WechatMch post xml result: \n".$data);
             return $data;
         } else {
             $error = curl_errno($ch);
