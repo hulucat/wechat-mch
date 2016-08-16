@@ -4,7 +4,7 @@ namespace Hulucat\WechatMch;
 use Cache;
 use Log;
 
-class Payment {
+class WechatPayment {
 
     /**统一下单接口
      * @param $dict [string: string], key和value对应微信文档中参数列表; 包含:
