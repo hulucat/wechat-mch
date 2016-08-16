@@ -108,8 +108,8 @@ class WechatApi{
             'type'          => 'jsapi',
         ]);
         $rt = json_decode($body);
-        if($rt['errcode']==0 && array_key_exists('ticket', $rt)){
-            $ticket = $rt['ticket'];
+        if($rt->errcode==0 && property_exists($rt, 'ticket')){
+            $ticket = $rt->ticket;
             Cache::put($cacheKey, $ticket, 100);
         }
         return $ticket;
