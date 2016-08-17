@@ -100,7 +100,7 @@ class WechatPayment {
                         <return_msg><![CDATA[INVALID SIGN]]></return_msg>
                     </xml>`;
             }
-            call_user_func($callback);
+            call_user_func($callback, $data);
             return `<xml>
                         <return_code><![CDATA[SUCCESS]]></return_code>
                         <return_msg><![CDATA[OK]]></return_msg>
