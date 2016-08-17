@@ -42,20 +42,36 @@ class WechatPayment {
         Log::debug("WechatMch unifiedorder result: ".json_encode($result));
         if($result['return_code']=='SUCCESS'){
             if($result['result_code']=='SUCCESS'){
-                return $result['prepay_id'];
+                $time = time();
+                $nonceStr = $utils->getNonceStr();
+                $package = 'prepay_id='.$result['prepay_id'];
+                $paySign = $this->sign([
+                    'appId'     => config('wechat_mch.merchant_app_id'),
+                    'timeStamp' => $time,
+                    'nonceStr'  => $nonceStr,
+                    'package'   => $package,
+                    'signType'  => 'MD5'
+                ]);
+                $rt = [
+                    'package'   => $package,
+                    'timestamp' => $time,
+                    'nonceStr'  => $nonceStr,
+                    'signType'  => 'MD5',
+                    'paySign'   => $paySign
+                ];
+                return $rt;
             }else{
                 Log::error("Error prepare pay", [
-                    'result_code'   => $result->result_code,
-                    'err_code'      => $result->err_code,
-                    'err_code_des'  => $result->err_code_des,
+                    'result_code'   => $result['result_code'],
+                    'err_code'      => $result['err_code'],
+                    'err_code_des'  => $result['err_code_des'],
                 ]);
                 return null;
             }
-            return $result;
         }else{
             Log::error("Error prepare pay", [
-                'return_code'   => $result->return_code,
-                'return_msg'    => $result->return_msg,
+                'return_code'   => $result['return_code'],
+                'return_msg'    => $result['return_msg']
             ]);
             return null;
         }
