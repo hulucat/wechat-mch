@@ -81,7 +81,7 @@ class WechatPayment {
         $xml = $GLOBALS['HTTP_RAW_POST_DATA'];
         $data = $this->fromXml($xml);
         Log::info("WechatMch payment notify: ".json_encode($data));
-        if($data->return_code=='SUCCESS'){
+        if($data['return_code']=='SUCCESS'){
             $dict = array();
             foreach ($data as $key=>$value){
                 if($key!='sign') {
@@ -89,9 +89,9 @@ class WechatPayment {
                 }
             }
             $sign = $this->sign($dict);
-            if($data->sign != $sign){
+            if($data['sign'] != $sign){
                 Log::error("WechatMch payment notify: sign not match", [
-                    "input"     => $data->sign,
+                    "input"     => $data['sign'],
                     "should_be" => $sign,
                 ]);
                 return
