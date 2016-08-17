@@ -80,7 +80,7 @@ class WechatPayment {
     public function handleNotify($callback){
         $xml = $GLOBALS['HTTP_RAW_POST_DATA'];
         $data = $this->fromXml($xml);
-        Log::info("WechatMch payment notify", json_encode($data));
+        Log::info("WechatMch payment notify: ".json_encode($data));
         if($data->return_code=='SUCCESS'){
             $dict = array();
             foreach ($data as $key=>$value){
