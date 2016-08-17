@@ -129,7 +129,7 @@ class WechatPayment {
         }
         ksort($dict);
         $dict['key'] = config('wechat_mch.merchant_payment_key');
-        $str = http_build_query($dict);
+        $str = urldecode(http_build_query($dict));
         Log::debug("WechatMch signature before MD5: $str");
         return strtoupper(md5($str));
     }
