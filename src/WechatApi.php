@@ -90,7 +90,7 @@ class WechatApi{
         }
         Log::debug("signature before sha1: $sign");
         $sign = sha1($sign);
-
+        $debug = $debug?'true':'false';
         $rt = "{debug: $debug, timestamp: $timestamp, nonceStr: ";
         $rt .= '"'.$nonceStr.'"';
         $rt .= ',appId:"'.config('wechat_mch.merchant_app_id').'"';
