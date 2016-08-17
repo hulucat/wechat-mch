@@ -37,7 +37,6 @@ class WechatPayment {
         $dict['trade_type'] = 'JSAPI';
         $dict['sign'] = $this->sign($dict);
         $xml = $this->toXml($dict);
-
         $result = $this->fromXml($this->postXml($xml, $url));
         Log::debug("WechatMch unifiedorder result: ".json_encode($result));
         if($result['return_code']=='SUCCESS'){
@@ -77,10 +76,15 @@ class WechatPayment {
         }
 	}
 
+    /**处理微信支付回调
+     * @param $callback 用户自定义处理函数, 形式如function callback($notify), $notify是微信返回的参数数组
+     * @return null
+     */
     public function handleNotify($callback){
         $xml = $GLOBALS['HTTP_RAW_POST_DATA'];
         $data = $this->fromXml($xml);
         Log::info("WechatMch payment notify: ".json_encode($data));
+        $rt = null;
         if($data['return_code']=='SUCCESS'){
             $dict = array();
             foreach ($data as $key=>$value){
@@ -94,23 +98,28 @@ class WechatPayment {
                     "input"     => $data['sign'],
                     "should_be" => $sign,
                 ]);
-                return
+                $rt =
                     `<xml>
                         <return_code><![CDATA[FAIL]]></return_code>
                         <return_msg><![CDATA[INVALID SIGN]]></return_msg>
                     </xml>`;
-            }
-            call_user_func($callback, $data);
-            return `<xml>
+            }else{
+                call_user_func($callback, $data);
+                $rt =
+                    `<xml>
                         <return_code><![CDATA[SUCCESS]]></return_code>
                         <return_msg><![CDATA[OK]]></return_msg>
                     </xml>`;
+            }
         }else{
-            return `<xml>
-                        <return_code><![CDATA[FAIL]]></return_code>
-                        <return_msg><![CDATA[PARDEN]]></return_msg>
-                    </xml>`;
+            $rt =
+                `<xml>
+                    <return_code><![CDATA[FAIL]]></return_code>
+                    <return_msg><![CDATA[PARDEN]]></return_msg>
+                </xml>`;
         }
+        Log::info("WechatMch payment notify output: \n{$rt}");
+        return $rt;
     }
 
     /** 产生签名
@@ -128,11 +137,8 @@ class WechatPayment {
         ksort($dict);
         $dict['key'] = config('wechat_mch.merchant_payment_key');
         $str = urldecode(http_build_query($dict));
-        Log::debug("WechatMch signature before MD5: $str");
         return strtoupper(md5($str));
     }
-
-
 
     private function fromXml($xml){
         //将XML转为array
