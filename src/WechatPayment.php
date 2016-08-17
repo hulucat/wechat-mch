@@ -80,10 +80,7 @@ class WechatPayment {
     public function handleNotify($callback){
         $xml = $GLOBALS['HTTP_RAW_POST_DATA'];
         $data = $this->fromXml($xml);
-        Log::info("WechatMch payment notify", [
-            'return_code'   => $data->return_code,
-            'return_msg'    => $data->return_msg,
-        ]);
+        Log::info("WechatMch payment notify", json_encode($data));
         if($data->return_code=='SUCCESS'){
             $dict = array();
             foreach ($data as $key=>$value){
@@ -97,20 +94,21 @@ class WechatPayment {
                     "input"     => $data->sign,
                     "should_be" => $sign,
                 ]);
-                return `<xml>
-                    <return_code><![CDATA[FAIL]]></return_code>
-                    <return_msg><![CDATA[INVALID SIGN]]></return_msg>
+                return
+                    `<xml>
+                        <return_code><![CDATA[FAIL]]></return_code>
+                        <return_msg><![CDATA[INVALID SIGN]]></return_msg>
                     </xml>`;
             }
             call_user_func($callback);
             return `<xml>
-                    <return_code><![CDATA[SUCCESS]]></return_code>
-                    <return_msg><![CDATA[OK]]></return_msg>
+                        <return_code><![CDATA[SUCCESS]]></return_code>
+                        <return_msg><![CDATA[OK]]></return_msg>
                     </xml>`;
         }else{
             return `<xml>
-                    <return_code><![CDATA[FAIL]]></return_code>
-                    <return_msg><![CDATA[PARDEN]]></return_msg>
+                        <return_code><![CDATA[FAIL]]></return_code>
+                        <return_msg><![CDATA[PARDEN]]></return_msg>
                     </xml>`;
         }
     }
