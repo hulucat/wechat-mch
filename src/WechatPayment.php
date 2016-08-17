@@ -121,7 +121,6 @@ class WechatPayment {
      * @return mixed
      */
     private function sign($params){
-        $paymentKey = config('wechat_mch.merchant_payment_key');
         $dict = array();
         foreach ($params as $key=>$value){
             if($value!=null && $value!=''){
@@ -129,14 +128,8 @@ class WechatPayment {
             }
         }
         ksort($dict);
-        $str = '';
-        foreach($dict as $key=>$value){
-            if($str!=''){
-                $str .= '&';
-            }
-            $str .= "{$key}={$value}";
-        }
-        $str .= "&key={$paymentKey}";
+        $dict['key'] = config('wechat_mch.merchant_payment_key');
+        $str = http_build_query($dict);
         Log::debug("WechatMch signature before MD5: $str");
         return strtoupper(md5($str));
     }
