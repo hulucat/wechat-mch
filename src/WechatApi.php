@@ -93,7 +93,7 @@ class WechatApi{
 
         $rt = "{debug: $debug, timestamp: $timestamp, nonceStr: ";
         $rt .= '"'.$nonceStr.'"';
-        $rt .= ',appId:"'.config('wechat_mch.app_id').'"';
+        $rt .= ',appId:"'.config('wechat_mch.merchant_app_id').'"';
         $rt .= ',signature:"'.$sign.'"';
         $rt .= ',jsApiList:[';
         foreach ($jsApiList as $i=>$a){
