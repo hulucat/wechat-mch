@@ -149,7 +149,7 @@ class WechatPayment {
         $xml = $this->toXml($params);
         $result = $this->fromXml($this->postXml($xml, $url));
         if(!$result || $result['return_code']!='SUCCESS'){
-            Log::error("WechatMch refund fail", json_encode($result));
+            Log::error("WechatMch refund fail: ".json_encode($result));
             return $result;
         }else{
             return null;
