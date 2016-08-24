@@ -7,7 +7,7 @@ use Log;
 class WechatPayment {
 
     /**统一下单接口
-     * @param $dict [string: string], key和value对应微信文档中参数列表; 包含:
+     * @param $params array[string: string], key和value对应微信文档中参数列表; 包含:
      * device_info(可选)
      * body
      * detail(可选)
@@ -26,17 +26,17 @@ class WechatPayment {
      * sub_openid(openid, sub_openid二者必填其一)
      * @return prepay_id or null
      */
-	public function prepare($dict){
+	public function prepare($params){
         $url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-        $dict['appid'] = config('wechat_mch.merchant_app_id');
-        $dict['mch_id'] = config('wechat_mch.merchant_mch_id');
-        $dict['sub_appid'] = config('wechat_mch.app_id');
-        $dict['sub_mch_id'] = config('wechat_mch.mch_id');
+        $params['appid'] = config('wechat_mch.merchant_app_id');
+        $params['mch_id'] = config('wechat_mch.merchant_mch_id');
+        $params['sub_appid'] = config('wechat_mch.app_id');
+        $params['sub_mch_id'] = config('wechat_mch.mch_id');
         $utils = new Utils();
-        $dict['nonce_str'] = $utils->getNonceStr();
-        $dict['trade_type'] = 'JSAPI';
-        $dict['sign'] = $this->sign($dict);
-        $xml = $this->toXml($dict);
+        $params['nonce_str'] = $utils->getNonceStr();
+        $params['trade_type'] = 'JSAPI';
+        $params['sign'] = $this->sign($params);
+        $xml = $this->toXml($params);
         $result = $this->fromXml($this->postXml($xml, $url));
         Log::debug("WechatMch unifiedorder result: ".json_encode($result));
         if($result['return_code']=='SUCCESS'){
@@ -120,6 +120,40 @@ class WechatPayment {
         }
         Log::info("WechatMch payment notify output: \n{$rt}");
         return $rt;
+    }
+
+    /**退款
+     * @param $params [string:string],对应微信文档中的参数,需要传递的参数包括:
+     * transaction_id 微信订单号
+     * out_trade_no 商户订单号 商户系统内部的订单号, transaction_id、out_trade_no二选一，
+     *              如果同时存在优先级：transaction_id> out_trade_no
+     * out_refund_no 商户退款单号
+     * total_fee
+     * refund_fee
+     * refund_fee_type 可选
+     * op_user_id 可选,操作员帐号, 默认为商户号
+     * @return array [string:string],对应微信文档中的结果参数
+     */
+    public function refund($params){
+        $url = "https://api.mch.weixin.qq.com/secapi/pay/refund";
+        $params['appid'] = config('wechat_mch.merchant_app_id');
+        $params['mch_id'] = config('wechat_mch.merchant_mch_id');
+        $params['sub_appid'] = config('wechat_mch.app_id');
+        $params['sub_mch_id'] = config('wechat_mch.mch_id');
+        if(!array_key_exists('op_user_id', $params)){
+            $params['op_user_id'] = config('wechat_mch.merchant_mch_id');
+        }
+        $utils = new Utils();
+        $params['nonce_str'] = $utils->getNonceStr();
+        $params['sign'] = $this->sign($params);
+        $xml = $this->toXml($params);
+        $result = $this->fromXml($this->postXml($xml, $url));
+        if($result['return_code']!='SUCCESS'){
+            Log::error("WechatMch refund fail", $result);
+            return $result;
+        }else{
+            return null;
+        }
     }
 
     /** 产生签名
