@@ -228,15 +228,16 @@ class WechatPayment {
             Log::debug("WechatMch post xml result: \n".$data);
             return $data;
         } else {
-            $error = curl_errno($ch);
+            $errno = curl_errno($ch);
+            $error = curl_error($ch);
             curl_close($ch);
             Log::error("Error post xml", [
                 'url'   => $url,
                 'xml'   => $xml,
-                'error' => $error,
+                'errno' => $errno,
+                'error' => $error
             ]);
             return null;
         }
     }
-
 }
