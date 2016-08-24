@@ -98,25 +98,25 @@ class WechatPayment {
                     "input"     => $data['sign'],
                     "should_be" => $sign,
                 ]);
-                $rt =
-                    `<xml>
+                $rt ='
+                    <xml>
                         <return_code><![CDATA[FAIL]]></return_code>
                         <return_msg><![CDATA[INVALID SIGN]]></return_msg>
-                    </xml>`;
+                    </xml>';
             }else{
                 call_user_func($callback, $data);
-                $rt =
-                    `<xml>
+                $rt ='
+                    <xml>
                         <return_code><![CDATA[SUCCESS]]></return_code>
                         <return_msg><![CDATA[OK]]></return_msg>
-                    </xml>`;
+                    </xml>';
             }
         }else{
-            $rt =
-                `<xml>
+            $rt = '
+                <xml>
                     <return_code><![CDATA[FAIL]]></return_code>
                     <return_msg><![CDATA[PARDEN]]></return_msg>
-                </xml>`;
+                </xml>';
         }
         Log::info("WechatMch payment notify output: \n{$rt}");
         return $rt;
