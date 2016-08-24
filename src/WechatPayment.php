@@ -148,8 +148,8 @@ class WechatPayment {
         $params['sign'] = $this->sign($params);
         $xml = $this->toXml($params);
         $result = $this->fromXml($this->postXml($xml, $url));
-        if($result['return_code']!='SUCCESS'){
-            Log::error("WechatMch refund fail", $result);
+        if(!$result || $result['return_code']!='SUCCESS'){
+            Log::error("WechatMch refund fail", json_encode($result));
             return $result;
         }else{
             return null;
@@ -197,7 +197,7 @@ class WechatPayment {
 
     private function postXml($xml, $url, $useCert=false, $timeout=30)
     {
-        Log::debug("WechatMch post xml to unifiedorder: \n".$xml);
+        Log::debug("WechatMch post xml to $url: \n".$xml);
         $ch = curl_init();
         //设置超时
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
