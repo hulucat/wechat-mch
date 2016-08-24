@@ -215,7 +215,7 @@ class WechatPayment {
             curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
             curl_setopt($ch,CURLOPT_SSLCERT, config('wechat_mch.merchant_sslcert'));
             curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
-            curl_setopt($ch,CURLOPT_SSLKEY, 'wechat_mch.merchant_sslkey');
+            curl_setopt($ch,CURLOPT_SSLKEY, config('wechat_mch.merchant_sslkey'));
         }
         //post提交方式
         curl_setopt($ch, CURLOPT_POST, TRUE);
