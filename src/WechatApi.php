@@ -184,7 +184,7 @@ class WechatApi{
         }
     }
 
-    /**
+    /**解析微信消息,字段内容见微信文档-消息管理
      * @param $postStr
      * @return array|null
      */
@@ -195,20 +195,20 @@ class WechatApi{
         }
         libxml_disable_entity_loader(true);
         $postObj = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
-        $from = $postObj->FromUserName;
-        $to = $postObj->ToUserName;
-        $content = trim($postObj->Content);
-        $type = $postObj->MsgType;
+        $from = strval($postObj->FromUserName);
+        $to = strval($postObj->ToUserName);
+        $content = trim(strval($postObj->Content));
+        $type = strval($postObj->MsgType);
         $rt = ['content'=>$content, 'type'=>$type, 'from'=>$from, 'to'=>$to];
         if(property_exists($postObj, 'Event')){
-            $rt['event'] = $postObj->Event;
+            $rt['event'] = strval($postObj->Event);
         }
         if(property_exists($postObj, 'EventKey')){
-            $rt['eventKey'] = $postObj->EventKey;
+            $rt['eventKey'] = strval($postObj->EventKey);
         }
         if(property_exists($postObj, 'Latitude')){
-            $rt['lat'] = $postObj->Latitude;
-            $rt['lng'] = $postObj->Longitude;
+            $rt['lat'] = floatval($postObj->Latitude);
+            $rt['lng'] = floatval($postObj->Longitude);
         }
         return $rt;
     }
