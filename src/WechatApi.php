@@ -107,13 +107,17 @@ class WechatApi{
     }
 
     protected function getJsApiTicket(){
+        $ac = $this->getAccessToken();
         $cacheKey = 'JS_API_TICKET';
         $ticket = Cache::get($cacheKey);
         if($ticket){
-            return $ticket;
+            //检查这个ticket对应的access token是不是过期了
+            $oldAccessToken = Cache::get('WECHAT_MCH_'.md5($ticket));
+            if($oldAccessToken == $ac){
+                return $ticket;
+            }
         }
         $utils = new Utils();
-        $ac = $this->getAccessToken();
         $body = $utils->httpGet('https://api.weixin.qq.com/cgi-bin/ticket/getticket', [
             'access_token'  => $ac,
             'type'          => 'jsapi',
@@ -122,6 +126,7 @@ class WechatApi{
         if($rt->errcode==0 && property_exists($rt, 'ticket')){
             $ticket = $rt->ticket;
             Cache::put($cacheKey, $ticket, 100);
+            Cache::put('WECHAT_MCH_'.md5($ticket), $ac);
         }
         return $ticket;
     }
@@ -241,6 +246,11 @@ class WechatApi{
         return new Article($title, $description, $url, $picurl);
     }
 
+    /**发送客服消息
+     * @param $to
+     * @param $articles
+     * @return bool
+     */
     public function sendNews($to, $articles){
         $url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=";
         $url .= $this->getAccessToken();
