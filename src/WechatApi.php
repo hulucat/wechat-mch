@@ -181,7 +181,7 @@ class WechatApi{
         $rt = json_decode($body);
         if(property_exists($rt, 'subscribe')){
             if(property_exists($rt, 'nickname')){
-                $rt->nickname = $this->encodeUserText($rt->nickname);
+                $rt->nickname = $utils->encodeUserText($rt->nickname);
             }
             return $rt;
         }else{
