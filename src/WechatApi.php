@@ -218,6 +218,53 @@ class WechatApi{
         return $rt;
     }
 
+    /**上传素材
+     * https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1444738726&token=&lang=zh_CN
+     * @param $type
+     * @param $media
+     */
+    public function uploadMedia($type, $media){
+        $multipart = [
+            [
+                'name'     => md5($media),
+                'contents' => md5($media),
+                'filename' => $media,
+                'headers'  => [
+                    'X-Foo' => 'this is an extra header to include'
+                ]
+            ]
+        ];
+        $utils = new Utils();
+        $url = sprintf('https://api.weixin.qq.com/cgi-bin/media/upload?access_token=%s&type=%s',
+            $this->getAccessToken(), $type);
+        $response = $utils->httpPostMultipart($url, $multipart);
+        if($response->getStatusCode()==200){
+            return json_decode($response->getBody());
+        }else{
+            return null;
+        }
+    }
+
+    public function replyImageMsg($from, $to, $imageUrl){
+        $media = $this->uploadMedia('image', $imageUrl);
+        if($media){
+            //$media['type'], $media['media_id']
+            $textTpl = "<xml>
+                        <FromUserName><![CDATA[%s]]></FromUserName>
+                        <ToUserName><![CDATA[%s]]></ToUserName>
+                        <CreateTime>%s</CreateTime>
+                        <MsgType><![CDATA[%s]]></MsgType>
+                        <Image>
+                            <MediaId>
+                                <![CDATA[%s]]>
+                            </MediaId>
+                        </Image>
+                        <FuncFlag>0</FuncFlag>
+                    </xml>";
+            return sprintf($textTpl, $from, $to, time(), 'image', $media['media_id']);
+        }
+    }
+
     public function replyTextMsg($from, $to, $content){
         $textTpl = "<xml>
                         <FromUserName><![CDATA[%s]]></FromUserName>
