@@ -265,7 +265,7 @@ class WechatApi{
         ";
         foreach ($articles as $article){
             $articlesText .= sprintf($articlesTpl, $article->title, $article->description,
-                $article->picUrl, $article->url);
+                $article->picurl, $article->url);
         }
         return sprintf($textTpl, $from, $to, time(), 'news', sizeof($articles), $articlesText);
     }
