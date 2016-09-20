@@ -245,6 +245,31 @@ class WechatApi{
         }
     }
 
+    public function replyNewsMsg($from, $to, $articles){
+        $textTpl = "<xml>
+                        <FromUserName><![CDATA[%s]]></FromUserName>
+                        <ToUserName><![CDATA[%s]]></ToUserName>
+                        <CreateTime>%s</CreateTime>
+                        <MsgType><![CDATA[%s]]></MsgType>
+                        <ArticleCount><![CDATA[%d]]></ArticleCount>
+                        <Articles>%s</Articles>
+                    </xml>";
+        $articlesText = '';
+        $articlesTpl = "
+            <item>
+                <Title><![CDATA[%s]]></Title> 
+                <Description><![CDATA[%s]]></Description>
+                <PicUrl><![CDATA[%s]]></PicUrl>
+                <Url><![CDATA[%s]]></Url>
+            </item>
+        ";
+        foreach ($articles as $article){
+            $articlesText .= sprintf($articlesTpl, $article['title'], $article['description'],
+                $article['picUrl'], $article['url']);
+        }
+        return sprintf($textTpl, $from, $to, time(), 'news', sizeof($articles), $articlesText);
+    }
+
     public function replyImageMsg($from, $to, $imageUrl){
         $media = $this->uploadMedia('image', $imageUrl);
         if($media){
