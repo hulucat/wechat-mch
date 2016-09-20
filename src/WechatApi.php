@@ -264,8 +264,8 @@ class WechatApi{
             </item>
         ";
         foreach ($articles as $article){
-            $articlesText .= sprintf($articlesTpl, $article['title'], $article['description'],
-                $article['picUrl'], $article['url']);
+            $articlesText .= sprintf($articlesTpl, $article->title, $article->description,
+                $article->picUrl, $article->url);
         }
         return sprintf($textTpl, $from, $to, time(), 'news', sizeof($articles), $articlesText);
     }
