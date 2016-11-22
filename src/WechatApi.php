@@ -365,13 +365,13 @@ class WechatApi{
     */
     public function transfer($params)
     {
+        $utils = app('WechatUtils');
         $url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
         //sign
         $params['mch_appid'] = $this->appId;
         $params['mchid'] = config('wechat_mch.merchant_mch_id');
-        $params['nonce_str'] = $this->getNonceStr();
+        $params['nonce_str'] = $utils->getNonceStr();
         $params['spbill_create_ip'] = $_SERVER['SERVER_ADDR'];
-        $utils = new Utils();
         $params['sign'] = $utils->sign($params);
         $xml = $utils->toXml($params);
         $result = $utils->fromXml($utils->postXml($xml, $url, true));
