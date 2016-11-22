@@ -374,7 +374,8 @@ class WechatApi{
         $params['spbill_create_ip'] = $_SERVER['SERVER_ADDR'];
         $params['sign'] = $utils->sign($params);
         $xml = $utils->toXml($params);
-        $resultXml = $utils->postXml($xml, $url, true, config('mch_sslcert'), config('mch_sslkey'));
+        $resultXml = $utils->postXml($xml, $url, true, config('wechat_mch.mch_sslcert'), 
+            config('wechat_mch.mch_sslkey'));
         $result = $utils->fromXml($resultXml);
         Log::debug("WechatMch transfer result: ".json_encode($result));
         return $result;
