@@ -116,7 +116,7 @@ class Utils{
      * @param $key
      * @return mixed
      */
-    public function sign($params){
+    public function sign($params, $paymentKey){
         $dict = array();
         foreach ($params as $key=>$value){
             if($value!=null && $value!=''){
@@ -124,7 +124,7 @@ class Utils{
             }
         }
         ksort($dict);
-        $dict['key'] = config('wechat_corp.mch_payment_key');
+        $dict['key'] = $paymentKey;
         $str = urldecode(http_build_query($dict));
         return strtoupper(md5($str));
     }
