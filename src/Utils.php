@@ -159,6 +159,10 @@ class Utils{
         if($sslkey==null){
             $sslkey = config('wechat_mch.merchant_sslkey');
         }
+        Log::debug("WechatMch post xml use cert", [
+            'sslcert'   => $sslcert,
+            'sslkey'    => $sslkey
+        ]);
         $ch = curl_init();
         //设置超时
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
