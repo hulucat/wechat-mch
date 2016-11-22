@@ -369,7 +369,7 @@ class WechatApi{
         $url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
         //sign
         $params['mch_appid'] = $this->appId;
-        $params['mchid'] = config('wechat_mch.merchant_mch_id');
+        $params['mchid'] = config('wechat_mch.mch_id');
         $params['nonce_str'] = $utils->getNonceStr();
         $params['spbill_create_ip'] = $_SERVER['SERVER_ADDR'];
         $params['sign'] = $utils->sign($params);
