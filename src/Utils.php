@@ -149,10 +149,16 @@ class Utils{
         $xml .= '</xml>';
         return $xml;
     }
-    
-    public function postXml($xml, $url, $useCert=false, $timeout=30)
+
+    public function postXml($xml, $url, $useCert=false, $sslcert=null, $sslkey=null, $timeout=30)
     {
         Log::debug("WechatMch post xml to $url: \n".$xml);
+        if($sslcert==null){
+            $sslcert = config('wechat_mch.merchant_sslcert');
+        }
+        if($sslkey==null){
+            $sslkey = config('wechat_mch.merchant_sslkey');
+        }
         $ch = curl_init();
         //设置超时
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
@@ -168,9 +174,9 @@ class Utils{
             //设置证书
             //使用证书：cert 与 key 分别属于两个.pem文件
             curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
-            curl_setopt($ch,CURLOPT_SSLCERT, config('wechat_mch.merchant_sslcert'));
+            curl_setopt($ch,CURLOPT_SSLCERT, $sslcert);
             curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
-            curl_setopt($ch,CURLOPT_SSLKEY, config('wechat_mch.merchant_sslkey'));
+            curl_setopt($ch,CURLOPT_SSLKEY, $sslkey);
         }
         //post提交方式
         curl_setopt($ch, CURLOPT_POST, TRUE);
