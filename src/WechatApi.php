@@ -1,9 +1,7 @@
 <?php
 namespace Hulucat\WechatMch;
-
-use GuzzleHttp\Client as HttpClient;
-use Cache;
 use Log;
+use Cache;
 
 class Article{
     public $title = null;
@@ -29,6 +27,9 @@ class WechatApi{
         $this->secret = config('wechat_mch.secret');
 	}
 
+    /**
+    *
+    */
     public function getAccessToken(){
         $cacheKey = 'WECHAT_MCH_ACCESS_TOKEN';
         $at = Cache::get($cacheKey);
@@ -257,7 +258,7 @@ class WechatApi{
         $articlesText = '';
         $articlesTpl = "
             <item>
-                <Title><![CDATA[%s]]></Title> 
+                <Title><![CDATA[%s]]></Title>
                 <Description><![CDATA[%s]]></Description>
                 <PicUrl><![CDATA[%s]]></PicUrl>
                 <Url><![CDATA[%s]]></Url>
@@ -330,7 +331,7 @@ class WechatApi{
             'to'        => $to,
             'articles'  => $articles,
         ]);
-        $utils = new Utils();
+        $utils = app('WechatUtils');
         $rt = $utils->httpPost($url, [
             'touser'    => $to,
             'msgtype'   => 'news',
@@ -346,4 +347,35 @@ class WechatApi{
         }
         return false;
     }
+
+    /**
+    * 企业付款
+    * @param $params, array，包含以下字段：
+    *   device_info 微信支付分配的终端设备号，非必填
+    *   partner_trade_no 商户订单号
+    *   openid 商户appid下，某用户的openid
+    *   check_name 
+    *       NO_CHECK：不校验真实姓名 
+            FORCE_CHECK：强校验真实姓名（未实名认证的用户会校验失败，无法转账） 
+            OPTION_CHECK：针对已实名认证的用户才校验真实姓名（未实名认证用户不校验，可以转账成功）
+    *   re_user_name 收款用户真实姓名。如果check_name设置为FORCE_CHECK或OPTION_CHECK，则必填用户真实姓名
+    *   amount 企业付款金额，单位为分
+    *   desc 企业付款操作说明信息。必填。
+    * @return 付款结果，参考微信文档付款结果 https://pay.weixin.qq.com/wiki/doc/api/tools/mch_pay.php?chapter=14_2
+    */
+    public function transfer($params)
+    {
+        $url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
+        //sign
+        $params['mch_appid'] = $this->appId;
+        $params['mchid'] = config('wechat_mch.merchant_mch_id');
+        $params['nonce_str'] = $this->getNonceStr();
+        $params['spbill_create_ip'] = $_SERVER['SERVER_ADDR'];
+        $utils = new Utils();
+        $params['sign'] = $utils->sign($params);
+        $xml = $utils->toXml($params);
+        $result = $utils->fromXml($utils->postXml($xml, $url, true));
+        Log::debug("WechatMch transfer result: ".json_encode($result));
+        return $result;
+    }    
 }

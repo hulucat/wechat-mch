@@ -33,6 +33,9 @@ class WechatServiceProvider extends ServiceProvider
         $this->app->singleton('WechatPayment', function($app){
             return new WechatPayment();
         });
+        $this->app->singleton('WechatCard', function($app){
+            return new WechatCard();
+        });
         $this->app->singleton('WechatUtils', function($app){
             return new Utils();
         });
