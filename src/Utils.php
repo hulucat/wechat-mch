@@ -127,7 +127,7 @@ class Utils{
         $dict['key'] = $paymentKey;
         $str = urldecode(http_build_query($dict));
         return strtoupper(md5($str));
-    }
+    }  
 
     public function fromXml($xml){
         //将XML转为array

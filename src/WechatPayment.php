@@ -32,25 +32,25 @@ class WechatPayment {
         $params['mch_id'] = config('wechat_mch.merchant_mch_id');
         $params['sub_appid'] = config('wechat_mch.app_id');
         $params['sub_mch_id'] = config('wechat_mch.mch_id');
-        $utils = new Utils();
+        $utils = app('WechatUtils');
         $params['nonce_str'] = $utils->getNonceStr();
         $params['trade_type'] = 'JSAPI';
-        $params['sign'] = $this->sign($params);
-        $xml = $this->toXml($params);
-        $result = $this->fromXml($this->postXml($xml, $url));
+        $params['sign'] = $utils->sign($params, config('wechat_mch.merchant_payment_key'));
+        $xml = $utils->toXml($params);
+        $result = $utils->fromXml($utils->postXml($xml, $url));
         Log::debug("WechatMch unifiedorder result: ".json_encode($result));
         if($result['return_code']=='SUCCESS'){
             if($result['result_code']=='SUCCESS'){
                 $time = time();
                 $nonceStr = $utils->getNonceStr();
                 $package = 'prepay_id='.$result['prepay_id'];
-                $paySign = $this->sign([
+                $paySign = $utils->sign([
                     'appId'     => config('wechat_mch.merchant_app_id'),
                     'timeStamp' => $time,
                     'nonceStr'  => $nonceStr,
                     'package'   => $package,
                     'signType'  => 'MD5'
-                ]);
+                ], config('wechat_mch.merchant_payment_key'));
                 $rt = [
                     'package'   => $package,
                     'timestamp' => $time,
@@ -82,7 +82,8 @@ class WechatPayment {
      */
     public function handleNotify($callback){
         $xml = $GLOBALS['HTTP_RAW_POST_DATA'];
-        $data = $this->fromXml($xml);
+        $utils = app('WechatUtils');
+        $data = $utils->fromXml($xml);
         Log::info("WechatMch payment notify: ".json_encode($data));
         $rt = null;
         if($data['return_code']=='SUCCESS'){
@@ -92,7 +93,7 @@ class WechatPayment {
                     $dict[$key] = $value;
                 }
             }
-            $sign = $this->sign($dict);
+            $sign = $utils->sign($dict, config('wechat_mch.merchant_payment_key'));
             if($data['sign'] != $sign){
                 Log::error("WechatMch payment notify: sign not match", [
                     "input"     => $data['sign'],
@@ -143,101 +144,16 @@ class WechatPayment {
         if(!array_key_exists('op_user_id', $params)){
             $params['op_user_id'] = config('wechat_mch.merchant_mch_id');
         }
-        $utils = new Utils();
+        $utils = app('WechatUtils');
         $params['nonce_str'] = $utils->getNonceStr();
-        $params['sign'] = $this->sign($params);
-        $xml = $this->toXml($params);
-        $result = $this->fromXml($this->postXml($xml, $url, true, 60));
+        $params['sign'] = $utils->sign($params, config('wechat_mch.merchant_payment_key'));
+        $xml = $utils->toXml($params);
+        $result = $utils->fromXml($utils->postXml($xml, $url, true, 60));
         if(!$result || $result['return_code']!='SUCCESS'){
             Log::error("WechatMch refund fail: ".json_encode($result));
             return null;
         }else{
             return $result;
-        }
-    }
-
-    /** 产生签名
-     * @param $params
-     * @param $key
-     * @return mixed
-     */
-    private function sign($params){
-        $dict = array();
-        foreach ($params as $key=>$value){
-            if($value!=null && $value!=''){
-                $dict[$key] = $value;
-            }
-        }
-        ksort($dict);
-        $dict['key'] = config('wechat_mch.merchant_payment_key');
-        $str = urldecode(http_build_query($dict));
-        return strtoupper(md5($str));
-    }
-
-    private function fromXml($xml){
-        //将XML转为array
-        //禁止引用外部xml实体
-        libxml_disable_entity_loader(true);
-        return json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-    }
-
-    private function toXml($dict)
-    {
-        $xml = '<xml>';
-        foreach ($dict as $key => $val) {
-            if (is_numeric($val)){
-                $xml .= "<{$key}>{$val}</{$key}>";
-            }else{
-                $xml .= "<{$key}><![CDATA[{$val}]]></{$key}>";
-            }
-        }
-        $xml .= '</xml>';
-        return $xml;
-    }
-
-    private function postXml($xml, $url, $useCert=false, $timeout=30)
-    {
-        Log::debug("WechatMch post xml to $url: \n".$xml);
-        $ch = curl_init();
-        //设置超时
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-        curl_setopt($ch,CURLOPT_URL, $url);
-        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,TRUE);
-        curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,2);//严格校验
-        //设置header
-        curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        //要求结果为字符串且输出到屏幕上
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-
-        if($useCert == true){
-            //设置证书
-            //使用证书：cert 与 key 分别属于两个.pem文件
-            curl_setopt($ch,CURLOPT_SSLCERTTYPE,'PEM');
-            curl_setopt($ch,CURLOPT_SSLCERT, config('wechat_mch.merchant_sslcert'));
-            curl_setopt($ch,CURLOPT_SSLKEYTYPE,'PEM');
-            curl_setopt($ch,CURLOPT_SSLKEY, config('wechat_mch.merchant_sslkey'));
-        }
-        //post提交方式
-        curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
-        //运行curl
-        $data = curl_exec($ch);
-        //返回结果
-        if($data){
-            curl_close($ch);
-            Log::debug("WechatMch post xml result: \n".$data);
-            return $data;
-        } else {
-            $errno = curl_errno($ch);
-            $error = curl_error($ch);
-            curl_close($ch);
-            Log::error("Error post xml", [
-                'url'   => $url,
-                'xml'   => $xml,
-                'errno' => $errno,
-                'error' => $error
-            ]);
-            return null;
         }
     }
 }
