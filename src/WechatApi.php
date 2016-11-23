@@ -369,13 +369,13 @@ class WechatApi{
         $url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
         //sign
         $params['mch_appid'] = $this->appId;
-        $params['mchid'] = config('wechat_mch.mch_id');
+        $params['mchid'] = config('wechat_mch.split_app_id');
         $params['nonce_str'] = $utils->getNonceStr();
         $params['spbill_create_ip'] = $_SERVER['SERVER_ADDR'];
-        $params['sign'] = $utils->sign($params, config('wechat_mch.mch_payment_key'));
+        $params['sign'] = $utils->sign($params, config('wechat_mch.split_payment_key'));
         $xml = $utils->toXml($params);
-        $resultXml = $utils->postXml($xml, $url, true, config('wechat_mch.mch_sslcert'), 
-            config('wechat_mch.mch_sslkey'));
+        $resultXml = $utils->postXml($xml, $url, true, config('wechat_mch.split_sslcert'), 
+            config('wechat_mch.split_sslkey'));
         $result = $utils->fromXml($resultXml);
         Log::debug("WechatMch transfer result: ".json_encode($result));
         return $result;

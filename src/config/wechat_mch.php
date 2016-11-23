@@ -15,7 +15,8 @@ return [
     'merchant_payment_key'  => env('WECHAT_MCH_MERCHANT_PAYMENT_KEY', '商户payment key'),
     'merchant_sslcert'      => env('WECHAT_MCH_MERCHANT_PAYMENT_CERT_PATH'),
     'merchant_sslkey'       => env('WECHAT_MCH_MERCHANT_PAYMENT_KEY_PATH'),
-    'mch_sslcert'           => env('WECHAT_MCH_PAYMENT_CERT_PATH'),
-    'mch_sslkey'            => env('WECHAT_MCH_PAYMENT_KEY_PATH'),
-    'mch_payment_key'       => env('WECHAT_MCH_PAYMENT_KEY', '子商户payment key，用于企业付款')
+    'split_sslcert'         => env('WECHAT_MCH_SPLIT_PAYMENT_CERT_PATH', '用于企业付款的支付证书'),
+    'split_sslkey'          => env('WECHAT_MCH_SPLIT_PAYMENT_KEY_PATH', '用于企业付款的支付证书Key'),
+    'split_payment_key'     => env('WECHAT_MCH_SPLIT_PAYMENT_KEY', '用于企业付款的payment key'),
+    'split_app_id'          => env('WECHAT_MCH_SPLIT_APP_ID', '用于企业付款的app id')
 ];
