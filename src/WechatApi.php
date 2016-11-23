@@ -371,7 +371,7 @@ class WechatApi{
         $params['mch_appid'] = config('wechat_mch.split_app_id');
         $params['mchid'] = config('wechat_mch.split_mch_id');
         $params['nonce_str'] = $utils->getNonceStr();
-        $params['spbill_create_ip'] = $_SERVER['SERVER_ADDR'];
+        $params['spbill_create_ip'] = config('wechat_mch.local_ip');
         $params['sign'] = $utils->sign($params, config('wechat_mch.split_payment_key'));
         $xml = $utils->toXml($params);
         $resultXml = $utils->postXml($xml, $url, true, config('wechat_mch.split_sslcert'), 
