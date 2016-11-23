@@ -368,8 +368,8 @@ class WechatApi{
         $utils = app('WechatUtils');
         $url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
         //sign
-        $params['mch_appid'] = $this->appId;
-        $params['mchid'] = config('wechat_mch.split_app_id');
+        $params['mch_appid'] = config('wechat_mch.split_app_id');
+        $params['mchid'] = config('wechat_mch.split_mch_id');
         $params['nonce_str'] = $utils->getNonceStr();
         $params['spbill_create_ip'] = $_SERVER['SERVER_ADDR'];
         $params['sign'] = $utils->sign($params, config('wechat_mch.split_payment_key'));
