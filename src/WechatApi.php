@@ -59,7 +59,7 @@ class WechatApi{
      * @return mixed
      */
     public function getJsApiConfig($jsApiList=[], $debug=false){
-        $utils = new Utils();
+        $utils = app('WechatUtils');
         $url = array_key_exists('HTTPS', $_SERVER)?'https://' : 'http://';
         $url .= $_SERVER['HTTP_HOST'];
         $url .= $_SERVER['REQUEST_URI'];
@@ -75,7 +75,6 @@ class WechatApi{
             'timestamp'     => $timestamp,
             'url'           => $url
         ]);
-
         $dict = [
             'jsapi_ticket'  => $ticket,
             'noncestr'      => $nonceStr,
@@ -327,10 +326,6 @@ class WechatApi{
     public function sendNews($to, $articles){
         $url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=";
         $url .= $this->getAccessToken();
-        Log::debug("WechatMch send news", [
-            'to'        => $to,
-            'articles'  => $articles,
-        ]);
         $utils = app('WechatUtils');
         $rt = $utils->httpPost($url, [
             'touser'    => $to,
@@ -340,10 +335,21 @@ class WechatApi{
             ]
         ]);
         if($rt->getStatusCode()==200){
+            Log::debug("WechatMch send news", [
+                'to'        => $to,
+                'articles'  => $articles,
+                'result'    => strval($rt->getBody())
+            ]);
             $body = json_decode(strval($rt->getBody()));
             if($body->errcode==0){
                 return true;
             }
+        }else{
+            Log::error("WechatMch send news failed", [
+                'to'        => $to,
+                'articles'  => $articles,
+                'status'    => $rt->getStatusCode()
+            ]);
         }
         return false;
     }
