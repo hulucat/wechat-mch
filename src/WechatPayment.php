@@ -148,7 +148,7 @@ class WechatPayment {
         $params['nonce_str'] = $utils->getNonceStr();
         $params['sign'] = $utils->sign($params, config('wechat_mch.merchant_payment_key'));
         $xml = $utils->toXml($params);
-        $result = $utils->fromXml($utils->postXml($xml, $url, true, 60));
+        $result = $utils->fromXml($utils->postXml($xml, $url, true));
         if(!$result || $result['return_code']!='SUCCESS'){
             Log::error("WechatMch refund fail: ".json_encode($result));
             return null;
