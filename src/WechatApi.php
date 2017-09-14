@@ -88,7 +88,6 @@ class WechatApi{
             }
             $sign .= "{$key}={$value}";
         }
-        Log::debug("signature before sha1: $sign");
         $sign = sha1($sign);
         $debug = $debug?'true':'false';
         $rt = "{debug: $debug, timestamp: $timestamp, nonceStr: ";
