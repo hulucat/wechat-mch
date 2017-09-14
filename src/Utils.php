@@ -29,12 +29,10 @@ class Utils{
     }
 
     public function httpGet($url, Array $query){
-        Log::debug("WechatMch get: ", [
-            'Request: ' => $url,
-            'Params: ' => $query,
-        ]);
         $response = $this->http->request('GET', $url, ['query' => $query]);
         Log::debug('WechatMch http get:', [
+            'Request: ' => $url,
+            'Params: '  => $query,
             'Status'    => $response->getStatusCode(),
             'Reason'    => $response->getReasonPhrase(),
             'Headers'   => $response->getHeaders(),
@@ -50,18 +48,16 @@ class Utils{
      */
     public function httpPost($url, $body){
         $body = json_encode($body, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
-        Log::debug("WechatMch post: ", [
-            'request: ' => $url,
-            'body: ' => $body,
-        ]);
         $response = $this->http->request('POST', $url, [
             'body'  => $body
         ]);
         Log::debug('WechatMch http post:', [
-            'Status'    => $response->getStatusCode(),
-            'Reason'    => $response->getReasonPhrase(),
-            'Headers'   => $response->getHeaders(),
-            'Body'      => strval($response->getBody()),
+            'Request: '         => $url,
+            'Request body: '    => $body,
+            'Status'            => $response->getStatusCode(),
+            'Reason'            => $response->getReasonPhrase(),
+            'Headers'           => $response->getHeaders(),
+            'Body'              => strval($response->getBody()),
         ]);
         return $response;
     }
