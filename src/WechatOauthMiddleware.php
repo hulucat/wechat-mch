@@ -36,6 +36,7 @@ class WechatOauthMiddleware
                     }else{
                         session(['wechat_mch.oauth_user' => $oauthBasic]);
                     }
+                    //TODO: 这一步似乎没有必要
                     return redirect()->to($this->getTargetUrl($request));
                 }
             }
@@ -44,7 +45,7 @@ class WechatOauthMiddleware
                 $scopes = 'snsapi_userinfo';
             }
             Log::debug("ready to redirect", [
-                'fullUrl'       => $request->fullUrl(),
+                'fullUrl'       => env('APP_URL').$_SERVER['REQUEST_URI'],
                 'scopes'        => $scopes,
             ]);
             return redirect($wechat->getOauth2Redirect($request->fullUrl(), $scopes));
