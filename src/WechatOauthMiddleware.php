@@ -44,11 +44,12 @@ class WechatOauthMiddleware
             if(in_array($request->path(), config('wechat_mch.oauth_userinfo_paths'))){
                 $scopes = 'snsapi_userinfo';
             }
+            $toUrl = env('APP_URL').$_SERVER['REQUEST_URI'];
             Log::debug("ready to redirect", [
-                'fullUrl'       => env('APP_URL').$_SERVER['REQUEST_URI'],
+                'fullUrl'       => $toUrl,
                 'scopes'        => $scopes,
             ]);
-            return redirect($wechat->getOauth2Redirect($request->fullUrl(), $scopes));
+            return redirect($wechat->getOauth2Redirect($toUrl, $scopes));
         }
         return $next($request);
     }
