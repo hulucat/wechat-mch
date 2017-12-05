@@ -30,14 +30,14 @@ class Utils{
 
     public function httpGet($url, Array $query){
         $response = $this->http->request('GET', $url, ['query' => $query]);
-        Log::debug('WechatMch http get:', [
-            'Request: ' => $url,
-            'Params: '  => $query,
-            'Status'    => $response->getStatusCode(),
-            'Reason'    => $response->getReasonPhrase(),
-            'Headers'   => $response->getHeaders(),
-            'Body'      => strval($response->getBody()),
-        ]);
+        // Log::debug('WechatMch http get:', [
+        //     'Request: ' => $url,
+        //     'Params: '  => $query,
+        //     'Status'    => $response->getStatusCode(),
+        //     'Reason'    => $response->getReasonPhrase(),
+        //     'Headers'   => $response->getHeaders(),
+        //     'Body'      => strval($response->getBody()),
+        // ]);
         return $response->getBody();
     }
 
@@ -51,14 +51,14 @@ class Utils{
         $response = $this->http->request('POST', $url, [
             'body'  => $body
         ]);
-        Log::debug('WechatMch http post:', [
-            'Request: '         => $url,
-            'Request body: '    => $body,
-            'Status'            => $response->getStatusCode(),
-            'Reason'            => $response->getReasonPhrase(),
-            'Headers'           => $response->getHeaders(),
-            'Body'              => strval($response->getBody()),
-        ]);
+        // Log::debug('WechatMch http post:', [
+        //     'Request: '         => $url,
+        //     'Request body: '    => $body,
+        //     'Status'            => $response->getStatusCode(),
+        //     'Reason'            => $response->getReasonPhrase(),
+        //     'Headers'           => $response->getHeaders(),
+        //     'Body'              => strval($response->getBody()),
+        // ]);
         return $response;
     }
 
@@ -155,10 +155,10 @@ class Utils{
         if($sslkey==null){
             $sslkey = config('wechat_mch.merchant_sslkey');
         }
-        Log::debug("WechatMch post xml use cert", [
-            'sslcert'   => $sslcert,
-            'sslkey'    => $sslkey
-        ]);
+        // Log::debug("WechatMch post xml use cert", [
+        //     'sslcert'   => $sslcert,
+        //     'sslkey'    => $sslkey
+        // ]);
         $ch = curl_init();
         //设置超时
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
@@ -186,7 +186,7 @@ class Utils{
         //返回结果
         if($data){
             curl_close($ch);
-            Log::debug("WechatMch post xml result: \n".$data);
+            //Log::debug("WechatMch post xml result: \n".$data);
             return $data;
         } else {
             $errno = curl_errno($ch);
