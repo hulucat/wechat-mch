@@ -50,6 +50,10 @@ class WechatPayment {
                 $time = time();
                 $nonceStr = $utils->getNonceStr();
                 $package = 'prepay_id='.$result['prepay_id'];
+                $appid = config('wechat_mch.merchant_app_id');
+                if(!config('wechat_mch.merchant_app_id')){
+                    $appid = config('wechat_mch.app_id');
+                }
                 $paySign = $utils->sign([
                     'appId'     => config('wechat_mch.merchant_app_id'),
                     'timeStamp' => $time,
