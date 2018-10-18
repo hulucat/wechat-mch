@@ -28,10 +28,16 @@ class WechatPayment {
      */
 	public function prepare($params){
         $url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-        $params['appid'] = config('wechat_mch.merchant_app_id');
-        $params['mch_id'] = config('wechat_mch.merchant_mch_id');
-        $params['sub_appid'] = config('wechat_mch.app_id');
-        $params['sub_mch_id'] = config('wechat_mch.mch_id');
+        if(config('wechat_mch.merchant_app_id')){
+            $params['appid'] = config('wechat_mch.merchant_app_id');
+            $params['mch_id'] = config('wechat_mch.merchant_mch_id');
+            $params['sub_appid'] = config('wechat_mch.app_id');
+            $params['sub_mch_id'] = config('wechat_mch.mch_id');    
+        }else{
+            $params['appid'] = config('wechat_mch.app_id');
+            $params['mch_id'] = config('wechat_mch.mch_id');
+        }
+        
         $utils = app('WechatUtils');
         $params['nonce_str'] = $utils->getNonceStr();
         $params['trade_type'] = 'JSAPI';
@@ -137,10 +143,15 @@ class WechatPayment {
      */
     public function refund($params){
         $url = "https://api.mch.weixin.qq.com/secapi/pay/refund";
-        $params['appid'] = config('wechat_mch.merchant_app_id');
-        $params['mch_id'] = config('wechat_mch.merchant_mch_id');
-        $params['sub_appid'] = config('wechat_mch.app_id');
-        $params['sub_mch_id'] = config('wechat_mch.mch_id');
+        if(config('wechat_mch.merchant_app_id')){
+            $params['appid'] = config('wechat_mch.merchant_app_id');
+            $params['mch_id'] = config('wechat_mch.merchant_mch_id');
+            $params['sub_appid'] = config('wechat_mch.app_id');
+            $params['sub_mch_id'] = config('wechat_mch.mch_id');    
+        }else{
+            $params['appid'] = config('wechat_mch.app_id');
+            $params['mch_id'] = config('wechat_mch.mch_id');
+        }
         if(!array_key_exists('op_user_id', $params)){
             $params['op_user_id'] = config('wechat_mch.merchant_mch_id');
         }
