@@ -55,7 +55,7 @@ class WechatPayment {
                     $appid = config('wechat_mch.app_id');
                 }
                 $paySign = $utils->sign([
-                    'appId'     => config('wechat_mch.merchant_app_id'),
+                    'appId'     => $appid,
                     'timeStamp' => $time,
                     'nonceStr'  => $nonceStr,
                     'package'   => $package,
