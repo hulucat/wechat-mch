@@ -30,14 +30,14 @@ class Utils{
 
     public function httpGet($url, Array $query){
         $response = $this->http->request('GET', $url, ['query' => $query]);
-        // Log::debug('WechatMch http get:', [
-        //     'Request: ' => $url,
-        //     'Params: '  => $query,
-        //     'Status'    => $response->getStatusCode(),
-        //     'Reason'    => $response->getReasonPhrase(),
-        //     'Headers'   => $response->getHeaders(),
-        //     'Body'      => strval($response->getBody()),
-        // ]);
+        Log::debug('WechatMch http get:', [
+            'Request: ' => $url,
+            'Params: '  => $query,
+            'Status'    => $response->getStatusCode(),
+            'Reason'    => $response->getReasonPhrase(),
+            'Headers'   => $response->getHeaders(),
+            'Body'      => strval($response->getBody()),
+        ]);
         return $response->getBody();
     }
 
